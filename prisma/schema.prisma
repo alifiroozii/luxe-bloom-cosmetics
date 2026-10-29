@@ -1,13 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Prisma schema for Luxe Bloom Cosmetics (Neon PostgreSQL on Vercel)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider  = "postgresql"
+  url       = env("LUXE_POSTGRES_PRISMA_URL")
+  directUrl = env("LUXE_POSTGRES_URL_NON_POOLING")
 }
 
 model Category {
@@ -30,7 +30,7 @@ model Product {
   originalPrice  Float?
   discount       Int?
   shade          String?
-  shades         String?     // JSON array of shades: [{"code":"2N","name":"بژ طبیعی","color":"#e4b595"}]
+  shades         String?     // JSON array of shades
   volume         String?     // e.g. "۳۰ میل"
   image          String
   rating         Float       @default(5.0)
@@ -56,24 +56,24 @@ model User {
 }
 
 model Order {
-  id             String      @id @default(cuid())
-  orderNumber    String      @unique
-  customerName   String?
-  customerPhone  String
-  customerAddress String?
-  customerCity   String?
+  id                 String      @id @default(cuid())
+  orderNumber        String      @unique
+  customerName       String?
+  customerPhone      String
+  customerAddress    String?
+  customerCity       String?
   customerPostalCode String?
-  subtotal       Float
-  discount       Float       @default(0)
-  shipping       Float       @default(0)
-  total          Float
-  status         String      @default("PENDING") // PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED
-  paymentMethod  String      @default("ONLINE")
-  userId         String?
-  user           User?       @relation(fields: [userId], references: [id])
-  items          OrderItem[]
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  subtotal           Float
+  discount           Float       @default(0)
+  shipping           Float       @default(0)
+  total              Float
+  status             String      @default("PENDING")
+  paymentMethod      String      @default("ONLINE")
+  userId             String?
+  user               User?       @relation(fields: [userId], references: [id])
+  items              OrderItem[]
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
 }
 
 model OrderItem {
