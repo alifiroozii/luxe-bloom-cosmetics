@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  icon      String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id             String      @id @default(cuid())
+  title          String
+  brand          String
+  categorySlug   String
+  category       Category?   @relation(fields: [categorySlug], references: [slug])
+  price          Float
+  originalPrice  Float?
+  discount       Int?
+  shade          String?
+  shades         String?     // JSON array of shades: [{"code":"2N","name":"بژ طبیعی","color":"#e4b595"}]
+  volume         String?     // e.g. "۳۰ میل"
+  image          String
+  rating         Float       @default(5.0)
+  reviewsCount   Int         @default(0)
+  isSpecialOffer Boolean     @default(false)
+  isBestSeller   Boolean     @default(false)
+  stock          Int         @default(20)
+  description    String?
+  orderItems     OrderItem[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String?  @unique
+  email     String?  @unique
+  name      String?
+  password  String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  orderNumber    String      @unique
+  customerName   String?
+  customerPhone  String
+  customerAddress String?
+  customerCity   String?
+  customerPostalCode String?
+  subtotal       Float
+  discount       Float       @default(0)
+  shipping       Float       @default(0)
+  total          Float
+  status         String      @default("PENDING") // PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  paymentMethod  String      @default("ONLINE")
+  userId         String?
+  user           User?       @relation(fields: [userId], references: [id])
+  items          OrderItem[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  title     String
+  price     Float
+  quantity  Int      @default(1)
+  shade     String?
+  image     String?
+}

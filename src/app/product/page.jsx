@@ -16,6 +16,22 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('specs');
   const [activeThumb, setActiveThumb] = useState('main');
+  const [productData, setProductData] = useState(null);
+
+  React.useEffect(() => {
+    async function loadProduct() {
+      try {
+        const res = await fetch('/api/products/prod-dior-glow');
+        const data = await res.json();
+        if (data.success && data.product) {
+          setProductData(data.product);
+        }
+      } catch (err) {
+        console.error('Error fetching product from Prisma:', err);
+      }
+    }
+    loadProduct();
+  }, []);
 
   const handleVolumeChange = (vol, pStr, num) => {
     setSelectedVolume(vol);

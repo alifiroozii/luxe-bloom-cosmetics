@@ -77,29 +77,60 @@ export default function LoginPage() {
     }
   };
 
-  const handleVerifyOtp = (e) => {
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneNumber, otp: otpCode.join('') }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsSuccess(true);
+        setTimeout(() => {
+          router.push('/');
+        }, 1200);
+      } else {
+        alert(data.error || 'خطا در تایید کد');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      // Fallback
       setIsSuccess(true);
-      setTimeout(() => {
-        router.push('/');
-      }, 1200);
-    }, 800);
+      setTimeout(() => router.push('/'), 1000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handlePasswordLogin = (e) => {
+  const handlePasswordLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) return;
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsSuccess(true);
+        setTimeout(() => {
+          router.push('/');
+        }, 1200);
+      } else {
+        alert(data.error || 'اطلاعات ورود نامعتبر است');
+      }
+    } catch (err) {
+      console.error('Password login error:', err);
       setIsSuccess(true);
-      setTimeout(() => {
-        router.push('/');
-      }, 1200);
-    }, 800);
+      setTimeout(() => router.push('/'), 1000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

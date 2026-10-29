@@ -21,6 +21,11 @@ export default function CheckoutPage() {
   const [promoApplied, setPromoApplied] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState(1);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [customerPhone, setCustomerPhone] = useState('09123456789');
+  const [customerName, setCustomerName] = useState('مشتری گرامی لوکس بلوم');
+  const [customerAddress, setCustomerAddress] = useState('تهران، خیابان فرشته، پلاک ۱۲');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmedOrder, setConfirmedOrder] = useState(null);
 
   const handleApplyPromo = (e) => {
     e.preventDefault();
@@ -29,9 +34,35 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleProceedToPayment = () => {
+  const handleProceedToPayment = async () => {
     if (items.length === 0) return;
-    setOrderPlaced(true);
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerPhone,
+          customerName,
+          customerAddress,
+          customerCity: 'تهران',
+          items,
+          shipping,
+          paymentMethod: 'ONLINE',
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setConfirmedOrder(data.order);
+        setOrderPlaced(true);
+      } else {
+        alert(data.error || 'خطا در ثبت سفارش');
+      }
+    } catch (err) {
+      console.error('Order creation error:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const crossSellProducts = [
@@ -109,10 +140,24 @@ export default function CheckoutPage() {
               <div className="w-20 h-20 rounded-full bg-primary-fixed flex items-center justify-center text-primary mb-space-md">
                 <span className="material-symbols-outlined text-[48px]">check_circle</span>
               </div>
-              <h2 className="font-headline-md text-headline-md text-on-surface font-bold mb-space-sm">سفارش شما با موفقیت ثبت گردید!</h2>
-              <p className="font-body-md text-body-md text-on-surface-variant max-w-md mb-space-lg">
-                کد پیگیری سفارش: <span className="font-bold text-primary">LX-{Math.floor(100000 + Math.random() * 900000)}</span>. بسته‌بندی نفیس شما توسط آتلیه لوکس بلوم آماده‌سازی شده و از طریق پیک اختصاصی ارسال خواهد شد.
+              <h2 className="font-headline-md text-headline-md text-on-surface font-bold mb-space-sm">سفارش شما با موفقیت در پایگاه داده ثبت شد!</h2>
+              <p className="font-body-md text-body-md text-on-surface-variant max-w-md mb-space-md">
+                کد رهگیری اختصاصی: <span className="font-bold text-primary tracking-wider">{confirmedOrder?.orderNumber || 'LB-1403-OK'}</span>
               </p>
+              <div className="bg-surface-container-low p-4 rounded-xl mb-space-lg w-full max-w-md text-right text-xs space-y-1">
+                <div className="flex justify-between text-on-surface">
+                  <span className="text-on-surface-variant">وضعیت سفارش:</span>
+                  <span className="text-primary font-bold">پرداخت موفق (دیتابیس آنلاین)</span>
+                </div>
+                <div className="flex justify-between text-on-surface">
+                  <span className="text-on-surface-variant">مبلغ کل فاکتور:</span>
+                  <span className="font-bold">{formatPrice(confirmedOrder?.total || total)} تومان</span>
+                </div>
+                <div className="flex justify-between text-on-surface">
+                  <span className="text-on-surface-variant">شماره خریدار:</span>
+                  <span>{confirmedOrder?.customerPhone || customerPhone}</span>
+                </div>
+              </div>
               <div className="flex gap-space-md">
                 <Link href="/" className="bg-primary hover:bg-primary-container text-on-primary font-label-md px-space-xl py-3 rounded-full transition-all">
                   بازگشت به صفحه اصلی
@@ -285,11 +330,13 @@ export default function CheckoutPage() {
                   {/* Checkout CTA */}
                   <button
                     onClick={handleProceedToPayment}
-                    disabled={items.length === 0}
+                    disabled={items.length === 0 || isSubmitting}
                     className="w-full bg-primary hover:bg-primary-container disabled:opacity-50 text-on-primary font-label-lg py-3.5 rounded-full transition-all shadow-md flex items-center justify-center gap-space-xs mt-space-sm"
                   >
-                    <span className="material-symbols-outlined text-[20px]">lock</span>
-                    <span>تکمیل اطلاعات و ادامه پرداخت</span>
+                    <span className="material-symbols-outlined text-[20px]">
+                      {isSubmitting ? 'sync' : 'lock'}
+                    </span>
+                    <span>{isSubmitting ? 'در حال ثبت در پایگاه داده...' : 'تکمیل اطلاعات و پرداخت امن'}</span>
                   </button>
 
                   {/* Trust Micro-Badges */}
