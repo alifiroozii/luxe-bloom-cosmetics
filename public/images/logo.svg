@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <circle cx="50" cy="50" r="46" stroke="#8a4853" stroke-width="2" opacity="0.4"/>
+  <circle cx="50" cy="50" r="40" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="2 3"/>
+  <!-- Elegant Bloom Petals -->
+  <path d="M50 15 C55 35, 65 45, 85 50 C65 55, 55 65, 50 85 C45 65, 35 55, 15 50 C35 45, 45 35, 50 15 Z" fill="#8a4853" opacity="0.9"/>
+  <path d="M50 25 C53 38, 62 47, 75 50 C62 53, 53 62, 50 75 C47 62, 38 53, 25 50 C38 47, 47 38, 50 25 Z" fill="#b76e79"/>
+  <circle cx="50" cy="50" r="6" fill="#f4ebe1"/>
+  <circle cx="50" cy="50" r="2.5" fill="#8a4853"/>
+</svg>

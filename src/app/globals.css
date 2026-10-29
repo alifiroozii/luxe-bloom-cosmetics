@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    direction: rtl;
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    overscroll-behavior: none;
+    background-color: #f9f9fc;
+    color: #1a1c1e;
+  }
+  main > :first-child {
+    margin-top: 0 !important;
+  }
+  main > :last-child {
+    margin-bottom: 0 !important;
+  }
+}
+
+/* Luxury Persian Font Tweaks */
+body {
+  font-family: 'Vazirmatn', 'Noto Sans', sans-serif;
+}
+
+h1, h2, h3, .font-headline-lg, .font-headline-md, .font-headline-sm, .font-display-hero {
+  font-family: 'Noto Serif', 'Vazirmatn', serif;
+}
+
+/* Subtle sleek scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f9f9fc;
+}
+::-webkit-scrollbar-thumb {
+  background: #d7c1c3;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8a4853;
+}
